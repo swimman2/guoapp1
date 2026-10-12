@@ -1,12 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- 依赖库高 minSdk 覆盖声明。包名必须与库 manifest 的 package 属性逐字一致
-         （以下均已从 Maven 仓库逐个下载实测确认）：
-         ffmpeg-kit AAR 为 com.antonkarpenko；ffmpeg_kit 插件模块为
-         com.antonkarpenko.ffmpegkit；Flutter embedding 为 io.flutter.embedding；
-         androidx.lifecycle 2.10 全系、androidx.core 1.18、androidx.savedstate 1.4、
-         androidx.media3 1.9.2 各模块均声明 minSdk=23，一并覆盖。 -->
-    <uses-sdk tools:overrideLibrary="com.antonkarpenko,com.antonkarpenko.ffmpegkit,io.flutter.embedding,androidx.core,androidx.core.ktx,androidx.lifecycle.process,androidx.lifecycle.runtime,androidx.lifecycle.viewmodel,androidx.lifecycle.viewmodel.ktx,androidx.lifecycle.viewmodel.savedstate,androidx.lifecycle.lifecycle.viewmodel.anchor,androidx.lifecycle.livedata,androidx.lifecycle.livedata.core,androidx.lifecycle.livedata.core.ktx,androidx.savedstate,androidx.savedstate.ktx,androidx.media3.common,androidx.media3.exoplayer,androidx.media3.extractor" />
+    <!-- 依赖库高 minSdk 覆盖声明。包名与各库 AAR manifest 的 package 属性逐字一致，
+         已对依赖闭包内全部库逐一从 Maven 下载实测：
+         androidx.core 1.18、lifecycle 2.10 全系（含 runtime-ktx、viewmodel-compose）、
+         savedstate 1.4、media3 1.9.2 全部 12 个模块均声明 minSdk=23，一并覆盖；
+         ffmpeg-kit AAR 为 com.antonkarpenko；embedding 为 io.flutter.embedding。 -->
+    <uses-sdk tools:overrideLibrary="com.antonkarpenko,com.antonkarpenko.ffmpegkit,io.flutter.embedding,androidx.core,androidx.core.ktx,androidx.lifecycle.process,androidx.lifecycle.runtime,androidx.lifecycle.ktx,androidx.lifecycle.viewmodel,androidx.lifecycle.viewmodel.ktx,androidx.lifecycle.viewmodel.savedstate,androidx.lifecycle.lifecycle.viewmodel.anchor,androidx.lifecycle.lifecycle.viewmodel.compose.anchor,androidx.lifecycle.livedata,androidx.lifecycle.livedata.core,androidx.lifecycle.livedata.core.ktx,androidx.savedstate,androidx.savedstate.ktx,androidx.media3.common,androidx.media3.exoplayer,androidx.media3.extractor,androidx.media3.container,androidx.media3.datasource,androidx.media3.decoder,androidx.media3.database,androidx.media3.exoplayer.hls,androidx.media3.exoplayer.dash,androidx.media3.exoplayer.rtsp,androidx.media3.exoplayer.smoothstreaming" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
