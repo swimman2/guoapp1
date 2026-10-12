@@ -48,10 +48,11 @@ if options.platform == 'android':
     ndk = Path(os.environ.get('ANDROID_NDK_HOME', Path(sdk) / 'ndk' / '28.2.13676358'))
     host = {'Darwin': 'darwin-x86_64', 'Linux': 'linux-x86_64', 'Windows': 'windows-x86_64'}[platform.system()]
     compilers = ndk / 'toolchains' / 'llvm' / 'prebuilt' / host / 'bin'
+    # 原生 Go 库原按 android26 编译，降为 21 以适配 Android 5.1（NDK 28 最低支持 API 21）。
     mappings = {
-        'arm64-v8a': ('arm64', 'aarch64-linux-android26-clang'),
-        'armeabi-v7a': ('arm', 'armv7a-linux-androideabi26-clang'),
-        'x86_64': ('amd64', 'x86_64-linux-android26-clang'),
+        'arm64-v8a': ('arm64', 'aarch64-linux-android21-clang'),
+        'armeabi-v7a': ('arm', 'armv7a-linux-androideabi21-clang'),
+        'x86_64': ('amd64', 'x86_64-linux-android21-clang'),
     }
     for abi in options.abi or list(mappings):
         architecture, name = mappings[abi]

@@ -32,7 +32,9 @@ android {
 
     defaultConfig {
         applicationId = "com.duanju.duanju_app"
-        minSdk = 26
+        // 原为 26（Android 8.0）。降为 21 后 D8 会自动 desugaring，
+        // 输出 Android 5.1 的 ART 可识别的 dex 035，不再含 invoke-custom / invoke-polymorphic。
+        minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
