@@ -31,6 +31,10 @@ with china_mirror_environment(environment, options.cn_mirrors) as env, mirrored_
         print('本次构建启用国内依赖镜像，保留官方 Maven 仓库备用。', flush=True)
     subprocess.run([sys.executable, str(root / 'scripts' / 'build_native.py'), '--platform', 'android', *abi_args, *variant.arguments],
                    cwd=root, env=env, check=True)
+    # 准备本地补丁 Maven 仓库：把自带 uses-sdk(minSdk=24) 声明的 ffmpeg-kit AAR
+    # 替换为去掉该声明的副本，从源头阻止 manifest 合并抬高最终 minSdk。
+    subprocess.run([sys.executable, str(root / 'scripts' / 'prepare_local_maven.py')],
+                   cwd=root, env=env, check=True)
     subprocess.run([flutter, 'pub', 'get'], cwd=root, env=env, check=True)
     # AGP 9 的 manifest 合并会把依赖库声明的高 minSdk（如 ffmpeg_kit 的 24）
     # 合并进最终 APK，抵消应用层 minSdk = 21；在 pub 缓存源头统一降到 21。
@@ -43,5 +47,9 @@ with china_mirror_environment(environment, options.cn_mirrors) as env, mirrored_
         targets = {'arm64-v8a': 'android-arm64', 'armeabi-v7a': 'android-arm', 'x86_64': 'android-x64'}
         build_args += ['--target-platform', ','.join(targets[abi] for abi in options.abi)]
     subprocess.run(build_args, cwd=root, env=env, check=True)
+    # 出包自检闸门：minSdk=21 / dex=035 / v1 签名任何一项不达标即让 CI 置红，
+    # 并把 manifest 合并报告打进日志，杜绝再产出装不进 Android 5.1 的 APK。
+    subprocess.run([sys.executable, str(root / 'scripts' / 'verify_output.py')],
+                   cwd=root, env=env, check=True)
     subprocess.run([sys.executable, str(root / 'scripts' / 'package_release.py'), '--platform', 'android', *abi_args, *variant.arguments],
                    cwd=root, env=env, check=True)

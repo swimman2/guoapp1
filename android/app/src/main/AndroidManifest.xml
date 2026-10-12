@@ -1,8 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- ffmpeg_kit 库自身声明 minSdk=24，此处强制覆盖以免 manifest 合并失败。
-         该库的 .so 仅在调用 FFmpeg 功能时才惰性加载，不影响常规播放。 -->
-    <uses-sdk tools:overrideLibrary="com.antonkarpenko.ffmpegkit" />
+    <!-- 依赖库高 minSdk 覆盖声明。包名必须与库 manifest 的 package 属性逐字一致：
+         ffmpeg-kit AAR（Maven 实测）为 com.antonkarpenko；
+         ffmpeg_kit 插件模块命名空间为 com.antonkarpenko.ffmpegkit；
+         Flutter embedding 为 io.flutter.embedding。
+         之前只写了 com.antonkarpenko.ffmpegkit，导致 AAR 的 minSdk=24 从未被覆盖。 -->
+    <uses-sdk tools:overrideLibrary="com.antonkarpenko,com.antonkarpenko.ffmpegkit,io.flutter.embedding" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
