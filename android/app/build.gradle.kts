@@ -14,6 +14,12 @@ val dartDefines = providers.gradleProperty("dart-defines").orNull.orEmpty()
     }
 val allSources = dartDefines["ALL_SOURCES"] == "true"
 
+// 天猫魔盒 M16S（Android 5.1 / API 22）兼容：minSdk 目标值。
+// 必须用变量赋值而非整数字面量——flutter 工具内置的 MinSdkVersionMigration
+// 会把「minSdk = 16~23 的整数字面量」自动改写为 flutter.minSdkVersion（=24），
+// 变量引用不在其正则匹配范围内，可确保 21 生效进入 D8（输出 dex 035 + desugaring）。
+val androidMinSdkTarget = 21
+
 val releaseKey = rootProject.file("key.properties")
 val releaseProperties = Properties()
 if (releaseKey.exists()) {
@@ -32,9 +38,7 @@ android {
 
     defaultConfig {
         applicationId = "com.duanju.duanju_app"
-        // 原为 26（Android 8.0）。降为 21 后 D8 会自动 desugaring，
-        // 输出 Android 5.1 的 ART 可识别的 dex 035，不再含 invoke-custom / invoke-polymorphic。
-        minSdk = 21
+        minSdk = androidMinSdkTarget
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
