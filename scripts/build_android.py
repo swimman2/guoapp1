@@ -32,7 +32,13 @@ with china_mirror_environment(environment, options.cn_mirrors) as env, mirrored_
     subprocess.run([sys.executable, str(root / 'scripts' / 'build_native.py'), '--platform', 'android', *abi_args, *variant.arguments],
                    cwd=root, env=env, check=True)
     subprocess.run([flutter, 'pub', 'get'], cwd=root, env=env, check=True)
-    build_args = [flutter, 'build', 'apk', '--release', '--split-per-abi', '--no-pub', *variant.flutter_arguments]
+    # AGP 9 的 manifest 合并会把依赖库声明的高 minSdk（如 ffmpeg_kit 的 24）
+    # 合并进最终 APK，抵消应用层 minSdk = 21；在 pub 缓存源头统一降到 21。
+    subprocess.run([sys.executable, str(root / 'scripts' / 'lower_dep_minsdk.py')],
+                   cwd=root, env=env, check=True)
+    # minSdk = 21 低于 Flutter 官方硬性下限 23，用官方逃生 flag 跳过该项检查。
+    build_args = [flutter, 'build', 'apk', '--release', '--split-per-abi', '--no-pub',
+                  '--android-skip-build-dependency-validation', *variant.flutter_arguments]
     if options.abi:
         targets = {'arm64-v8a': 'android-arm64', 'armeabi-v7a': 'android-arm', 'x86_64': 'android-x64'}
         build_args += ['--target-platform', ','.join(targets[abi] for abi in options.abi)]
